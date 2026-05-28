@@ -1,6 +1,6 @@
 # SVNC Admissions Portal
 
-NEP-2020-compliant, single-college online admission management system built for **Sardar Vallabhbhai National College, Anand, Gujarat**. End-to-end: student registration, DigiLocker-verified documents, application & payment flow, eligibility engine, admission tests with admit cards, merit lists with tie-breakers, seat allocation with acceptance windows, withdrawal & refund (UGC-slab compliant), notifications (SMS / WhatsApp / Email), AISHE & operational reports, DPDP-compliant audit log.
+NEP-2020-compliant, single-college online admission management system built for **National College, Birbhum, Kolkata**. End-to-end: student registration, DigiLocker-verified documents, application & payment flow, eligibility engine, admission tests with admit cards, merit lists with tie-breakers, seat allocation with acceptance windows, withdrawal & refund (UGC-slab compliant), notifications (SMS / WhatsApp / Email), AISHE & operational reports, DPDP-compliant audit log.
 
 ---
 
@@ -88,7 +88,7 @@ Unauthorised commercial use is a copyright violation under the Indian Copyright 
 
 ## Contact
 
-**Subhojit Sarkar**
+**Subhojit Kundu**
 Database access, commercial licensing, and bug reports — all routed through one form:
 
 [https://forms.gle/XYjKgvRaw1ZSZ8Cv7](https://forms.gle/XYjKgvRaw1ZSZ8Cv7)
