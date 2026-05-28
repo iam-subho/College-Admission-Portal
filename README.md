@@ -61,7 +61,7 @@ State your intended use case (non-commercial / commercial — see License below)
 
 ## License
 
-Copyright © Subhojit Sarkar. All rights reserved.
+Copyright © Subhojit Kundu. All rights reserved.
 
 This source is released under a **dual-track license**:
 
