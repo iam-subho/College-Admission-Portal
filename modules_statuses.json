@@ -1,0 +1,16 @@
+{
+    "Users": true,
+    "Students": true,
+    "Academics": true,
+    "Admissions": true,
+    "Documents": true,
+    "Tests": true,
+    "Merit": true,
+    "Seats": true,
+    "Fees": true,
+    "Payments": true,
+    "Notifications": true,
+    "Reports": true,
+    "Support": true,
+    "Audit": true
+}

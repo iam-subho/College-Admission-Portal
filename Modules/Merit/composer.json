@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/merit",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Merit\\": "app/",
+            "Modules\\Merit\\Database\\Factories\\": "database/factories/",
+            "Modules\\Merit\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Merit\\Tests\\": "tests/"
+        }
+    }
+}

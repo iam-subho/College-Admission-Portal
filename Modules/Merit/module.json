@@ -1,0 +1,11 @@
+{
+    "name": "Merit",
+    "alias": "merit",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Merit\\Providers\\MeritServiceProvider"
+    ],
+    "files": []
+}

@@ -1,0 +1,61 @@
+# Laravel + IDE + OS noise
+*.log
+.DS_Store
+.env
+.env.backup
+.env.production
+.phpactor.json
+.phpunit.result.cache
+/.phpunit.cache
+/.idea
+/.nova
+/.vscode
+/.zed
+/auth.json
+/node_modules
+/public/build
+/public/fonts-manifest.dev.json
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/vendor
+_ide_helper.php
+Homestead.json
+Homestead.yaml
+Thumbs.db
+
+# ---------- AI assistant workspaces & instruction files ----------
+/.claude/
+/.junie/
+/.cursor/
+/.codex/
+/.copilot/
+/.codeium/
+/.continue/
+/.aider*
+/.windsurf*
+/.openai*
+/.anthropic*
+.cursorrules
+.aiderrules
+.windsurfrules
+.github/copilot-instructions.md
+
+# ---------- All Markdown is private except the README ----------
+*.md
+!README.md
+
+# ---------- Database schema is proprietary — email to obtain ----------
+# Ship code architecture, NOT the schema. Anyone wanting to run this needs
+# to request the migrations + seeders from the author (see README license).
+/database/migrations/*.php
+/database/seeders/*.php
+/Modules/*/database/migrations/*.php
+/Modules/*/database/seeders/*.php
+
+# Keep the .gitkeep stubs so the directories themselves are preserved
+!/database/migrations/.gitkeep
+!/database/seeders/.gitkeep
+!/Modules/*/database/migrations/.gitkeep
+!/Modules/*/database/seeders/.gitkeep
