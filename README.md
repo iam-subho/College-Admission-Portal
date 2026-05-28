@@ -1,4 +1,4 @@
-# SVNC Admissions Portal
+# National College Admissions Portal
 
 NEP-2020-compliant, single-college online admission management system built for **National College, Birbhum, Kolkata**. End-to-end: student registration, DigiLocker-verified documents, application & payment flow, eligibility engine, admission tests with admit cards, merit lists with tie-breakers, seat allocation with acceptance windows, withdrawal & refund (UGC-slab compliant), notifications (SMS / WhatsApp / Email), AISHE & operational reports, DPDP-compliant audit log.
 
