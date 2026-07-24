@@ -85,7 +85,7 @@ const destroy = (p) => {
                     </select>
                 </div>
                 <InputText v-model="form.config.auth_key" label="Auth Key (MSG91 API key)" placeholder="Leave blank to keep existing" />
-                <InputText v-model="form.config.sender_id" label="Sender ID" placeholder="e.g. SVNCAD" />
+                <InputText v-model="form.config.sender_id" label="Sender ID" placeholder="6-character DLT sender ID" />
                 <InputText v-model="form.config.flow_id" label="Flow ID (optional)" placeholder="MSG91 flow id if using flows" />
                 <InputText v-model="form.priority" type="number" label="Priority (lower = preferred)" />
                 <div class="md:col-span-3">

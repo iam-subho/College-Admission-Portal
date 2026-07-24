@@ -36,11 +36,15 @@
 
 <div class="header">
     <div class="crest">
-        SVNC<br/>1956
+        {{ $site['college_short'] ?? '' }}<br/>{{ $site['estd_year'] ?? '' }}
     </div>
     <div class="college">
-        <h1>Sardar Vallabhbhai National College</h1>
-        <div class="meta">Anand, Gujarat · NAAC A+ · UGC 2(f) &amp; 12(B)<br/>
+        <h1>{{ $site['college_name'] ?? '' }}</h1>
+        <div class="meta">{{ implode(' · ', array_filter([
+                $site['city_state'] ?? null,
+                ($site['naac_grade'] ?? null) ? 'NAAC '.$site['naac_grade'] : null,
+                ($site['ugc_status'] ?? null) ? 'UGC '.$site['ugc_status'] : null,
+            ])) }}<br/>
             Online Admissions Portal · Session {{ $session?->code ?? '—' }}</div>
     </div>
     <div style="clear: both;"></div>
@@ -142,7 +146,7 @@
 
 <div class="footer">
     System-generated admit card · Issued on {{ now()->format('d M Y, h:i A') }}<br/>
-    For queries, contact admissions@svnc.edu.in
+    For queries, contact {{ $site['helpline_email'] ?? '' }}
 </div>
 
 </body>

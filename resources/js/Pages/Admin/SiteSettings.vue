@@ -41,7 +41,7 @@ const groupLabel = (g) => ({
                     <div v-for="s in items" :key="s.key">
                         <label class="block text-xs font-medium text-ink mb-1">
                             {{ s.label }}
-                            <span class="text-ink-mute font-mono text-[10px]">· {{ s.key }}</span>
+                            <span class="text-ink-mute font-mono text-[10px]"></span>
                         </label>
                         <textarea v-if="s.input_type === 'textarea'"
                             v-model="form.values[s.key]"

@@ -4,6 +4,7 @@ namespace Modules\Tests\Pdf;
 
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Response;
+use Modules\Admissions\Models\SiteSetting;
 use Modules\Tests\Models\AdmissionTestCandidate;
 
 /**
@@ -31,6 +32,7 @@ class AdmitCardPdf
             'session' => $candidate->application?->session,
             'schedule' => $candidate->schedule,
             'config' => $candidate->schedule?->config,
+            'site' => SiteSetting::resolved(),
         ])->render();
 
         if (! $candidate->admit_card_downloaded_at) {

@@ -7,6 +7,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Modules\Admissions\Models\SiteSetting;
+use Modules\Notifications\Contracts\SendResult;
 use Modules\Notifications\Models\NotificationLog;
 use Modules\Notifications\Models\NotificationTemplate;
 use Modules\Notifications\Services\MailManager;
@@ -61,7 +63,7 @@ class SendNotificationJob implements ShouldQueue
 
         match ($this->channel) {
             NotificationTemplate::CHANNEL_SMS => $this->sendSms($smsManager, $template, $renderedBody),
-            NotificationTemplate::CHANNEL_EMAIL => $this->sendEmail($mailManager, $template, $renderedSubject ?? 'SVNC Admissions', $renderedBody),
+            NotificationTemplate::CHANNEL_EMAIL => $this->sendEmail($mailManager, $template, $renderedSubject ?: SiteSetting::get('portal_name'), $renderedBody),
             NotificationTemplate::CHANNEL_WHATSAPP => $this->sendWhatsapp($whatsappManager, $template, $renderedBody),
             default => $this->logFailure("Unknown channel '{$this->channel}'."),
         };
@@ -109,7 +111,7 @@ class SendNotificationJob implements ShouldQueue
         NotificationTemplate $template,
         string $providerCode,
         string $body,
-        \Modules\Notifications\Contracts\SendResult $result,
+        SendResult $result,
         bool $isStub,
     ): void {
         NotificationLog::create([

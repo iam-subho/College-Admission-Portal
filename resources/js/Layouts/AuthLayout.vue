@@ -1,6 +1,8 @@
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import CollegeMark from '@/Components/Ui/CollegeMark.vue';
+import { useSite } from '@/Composables/useSite.js';
 
 defineProps({
     title: { type: String, default: '' },
@@ -9,20 +11,15 @@ defineProps({
 
 const page = usePage();
 const flash = computed(() => page.props.flash || {});
+const { helplinePhone, helplineEmail } = useSite();
 </script>
 
 <template>
     <div class="min-h-screen bg-cream flex flex-col">
         <header class="bg-navy text-white">
             <div class="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
-                <Link href="/" class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-maroon text-white text-xs font-bold flex items-center justify-center">
-                        SVNC<br>1956
-                    </div>
-                    <div class="leading-tight">
-                        <div class="font-serif text-base">Sardar Vallabhbhai National College</div>
-                        <div class="text-xs text-gray-300">Online Admissions · Session 2026-27</div>
-                    </div>
+                <Link href="/">
+                    <CollegeMark />
                 </Link>
                 <Link href="/" class="text-xs underline-offset-4 hover:underline">Back to home</Link>
             </div>
@@ -53,7 +50,7 @@ const flash = computed(() => page.props.flash || {});
                 </div>
 
                 <p class="text-xs text-ink-mute text-center mt-4">
-                    Helpline: 1800-555-0142 · admissions@svnc.ac.in
+                    Helpline: {{ helplinePhone }} · {{ helplineEmail }}
                 </p>
             </div>
         </main>

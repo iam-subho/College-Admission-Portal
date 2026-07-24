@@ -3,10 +3,17 @@ import { useForm, Link, Head } from '@inertiajs/vue3';
 import AuthLayout from '@/Layouts/AuthLayout.vue';
 import InputText from '@/Components/Ui/InputText.vue';
 import Button from '@/Components/Ui/Button.vue';
+import { computed } from 'vue';
+import { useSite } from '@/Composables/useSite.js';
 
 defineProps({
     dpdp_version: { type: String, default: '' },
 });
+
+const { sessionCode } = useSite();
+const subtitle = computed(() =>
+    sessionCode.value ? `UG & PG admissions — Session ${sessionCode.value}` : 'UG & PG admissions',
+);
 
 const form = useForm({
     name: '',
@@ -24,7 +31,7 @@ const submit = () => form.post('/register', {
 
 <template>
     <Head title="Register" />
-    <AuthLayout title="Create Account" subtitle="UG & PG admissions — Session 2026-27">
+    <AuthLayout title="Create Account" :subtitle="subtitle">
         <form @submit.prevent="submit" class="space-y-4">
             <InputText
                 v-model="form.name"

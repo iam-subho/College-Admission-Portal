@@ -4,6 +4,7 @@ import PortalLayout from '@/Layouts/PortalLayout.vue';
 import Button from '@/Components/Ui/Button.vue';
 import { ref, computed } from 'vue';
 import { formatDateTime, formatDate } from '@/utils/date.js';
+import { useSite } from '@/Composables/useSite.js';
 
 const props = defineProps({
     application: { type: Object, required: true },
@@ -11,6 +12,8 @@ const props = defineProps({
     admission_fee: { type: Object, default: () => ({ amount: 0, source: 'unset' }) },
     can_accept: { type: Boolean, default: false },
 });
+
+const { collegeShort } = useSite();
 
 const page = usePage();
 const flashError = computed(() => page.props?.flash?.error || null);
@@ -142,7 +145,7 @@ const showSuccess = computed(() => props.allocation?.status === 'admitted');
                 <div v-if="showSuccess" class="border-2 border-green-600 rounded p-4 bg-green-50">
                     <h3 class="font-serif text-base text-green-900 mb-1">✓ Admission Confirmed</h3>
                     <p class="text-sm text-green-800">
-                        Admission fee paid on {{ formatDateTime(allocation.admitted_at) }}. Welcome to SVNC.
+                        Admission fee paid on {{ formatDateTime(allocation.admitted_at) }}. Welcome to {{ collegeShort }}.
                     </p>
                 </div>
             </div>

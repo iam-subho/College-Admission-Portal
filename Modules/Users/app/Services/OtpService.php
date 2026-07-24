@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str;
+use Modules\Admissions\Models\SiteSetting;
 use Modules\Users\Models\OtpCode;
 
 class OtpService
@@ -136,9 +136,11 @@ class OtpService
         }
 
         if ($channel === OtpCode::CHANNEL_EMAIL) {
+            $portal = SiteSetting::get('portal_name');
+
             try {
-                Mail::raw("Your SVNC Admissions OTP is: {$code}\nValid for ".((int) ceil(config('sms.otp.ttl_seconds', 600) / 60)).' minutes.', function ($m) use ($recipient) {
-                    $m->to($recipient)->subject('SVNC Admissions OTP');
+                Mail::raw("Your {$portal} OTP is: {$code}\nValid for ".((int) ceil(config('sms.otp.ttl_seconds', 600) / 60)).' minutes.', function ($m) use ($recipient, $portal) {
+                    $m->to($recipient)->subject("{$portal} OTP");
                 });
             } catch (\Throwable $e) {
                 Log::warning('[otp] email send failed', ['error' => $e->getMessage()]);

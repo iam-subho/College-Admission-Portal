@@ -7,6 +7,7 @@ use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Modules\Admissions\Models\SiteSetting;
 use Modules\Payments\Contracts\PaymentGatewayContract;
 use Modules\Payments\Contracts\RefundResult;
 use Modules\Payments\Contracts\WebhookResult;
@@ -79,7 +80,7 @@ class RazorpayDriver implements PaymentGatewayContract
                 'internal_order_id' => $order->id,
                 'amount_paise' => (int) round($order->total * 100),
                 'currency' => $order->currency,
-                'name' => 'SVNC Admissions',
+                'name' => SiteSetting::get('portal_name'),
                 'description' => 'Application Fee — '.$order->order_number,
                 'callback_url' => route('payments.callback.razorpay'),
             ],

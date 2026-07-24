@@ -5,7 +5,9 @@ namespace App\Providers;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Modules\Admissions\Models\SiteSetting;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,6 +19,14 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureRateLimiters();
+        $this->shareSiteIdentity();
+    }
+
+    protected function shareSiteIdentity(): void
+    {
+        View::composer('app', function ($view) {
+            $view->with('portalName', SiteSetting::get('portal_name'));
+        });
     }
 
     /**

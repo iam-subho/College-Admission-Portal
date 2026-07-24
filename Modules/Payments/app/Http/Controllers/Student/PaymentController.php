@@ -5,14 +5,20 @@ namespace Modules\Payments\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
+use Modules\Admissions\Models\AcademicSession;
 use Modules\Admissions\Models\Application;
+use Modules\Admissions\Models\SiteSetting;
+use Modules\Audit\Services\DpdpConsentRecorder;
 use Modules\Payments\Actions\CreatePaymentOrderAction;
+use Modules\Payments\Actions\ProcessWebhookAction;
 use Modules\Payments\Models\PaymentGateway;
 use Modules\Payments\Models\PaymentOrder;
 use Modules\Payments\Services\FeeResolver;
 use Modules\Payments\Services\PaymentGatewayManager;
+use Modules\Users\Models\DpdpConsent;
 
 class PaymentController extends Controller
 {
@@ -30,15 +36,15 @@ class PaymentController extends Controller
         // One-time mode: if this student already paid in this session
         // (via a prior application), mark this app as covered and skip
         // the payment screen entirely.
-        if ($application->session?->payment_mode === \Modules\Admissions\Models\AcademicSession::PAYMENT_MODE_ONE_TIME
+        if ($application->session?->payment_mode === AcademicSession::PAYMENT_MODE_ONE_TIME
             && ! $application->covered_by_payment_order_id
-            && ! $application->paymentOrders()->where('status', \Modules\Payments\Models\PaymentOrder::STATUS_PAID)->exists()) {
+            && ! $application->paymentOrders()->where('status', PaymentOrder::STATUS_PAID)->exists()) {
 
             $covering = $this->feeResolver->findCoveringOrder($application);
             if ($covering) {
                 $application->forceFill([
                     'covered_by_payment_order_id' => $covering->id,
-                    'payment_status' => \Modules\Admissions\Models\Application::PAYMENT_COVERED,
+                    'payment_status' => Application::PAYMENT_COVERED,
                 ])->save();
 
                 return redirect()->route('student.applications.index')->with('flash', [
@@ -70,7 +76,7 @@ class PaymentController extends Controller
                 'internal_order_id' => $latestOrder->id,
                 'amount_paise' => (int) round($latestOrder->total * 100),
                 'currency' => $latestOrder->currency,
-                'name' => 'SVNC Admissions',
+                'name' => SiteSetting::get('portal_name'),
                 'description' => 'Application Fee — '.$latestOrder->order_number,
                 'callback_url' => route('payments.callback.razorpay'),
             ];
@@ -109,8 +115,8 @@ class PaymentController extends Controller
         $gateway = PaymentGateway::where('id', $data['gateway_id'])->where('is_active', true)->firstOrFail();
         $result = $action->execute($application, $gateway);
 
-        app(\Modules\Audit\Services\DpdpConsentRecorder::class)->record(
-            scope: \Modules\Users\Models\DpdpConsent::SCOPE_PAYMENT,
+        app(DpdpConsentRecorder::class)->record(
+            scope: DpdpConsent::SCOPE_PAYMENT,
             userId: $request->user()->id,
             request: $request,
             metadata: [
@@ -142,7 +148,7 @@ class PaymentController extends Controller
             'payload' => [
                 'payment' => [
                     'entity' => [
-                        'id' => 'pay_stub_'.\Illuminate\Support\Str::random(12),
+                        'id' => 'pay_stub_'.Str::random(12),
                         'order_id' => $order->gateway_order_id,
                         'amount' => (int) round($order->total * 100),
                         'currency' => $order->currency,
@@ -160,7 +166,7 @@ class PaymentController extends Controller
         );
         $faked->headers->set('Content-Type', 'application/json');
 
-        app(\Modules\Payments\Actions\ProcessWebhookAction::class)->execute($order->gateway->code, $faked);
+        app(ProcessWebhookAction::class)->execute($order->gateway->code, $faked);
 
         return redirect()->route('student.payments.show', $order->application)
             ->with('flash', ['success' => 'Payment received (stub).']);

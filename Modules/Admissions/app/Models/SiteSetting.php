@@ -32,15 +32,27 @@ class SiteSetting extends Model
             ->useLogName('site_setting');
     }
 
-    /** Return the full key=>value map, cached for an hour. */
+    /** Return the raw stored key=>value map, cached for an hour. */
     public static function map(): array
     {
         return Cache::remember(self::CACHE_KEY, 3600, fn () => self::pluck('value', 'key')->all());
     }
 
+    /** @return array<string, string|null> Stored rows on top of the config fallbacks. */
+    public static function resolved(): array
+    {
+        return array_replace((array) config('admissions.identity', []), self::map());
+    }
+
     public static function get(string $key, ?string $default = null): ?string
     {
-        return self::map()[$key] ?? $default;
+        $map = self::map();
+
+        if (array_key_exists($key, $map)) {
+            return $map[$key];
+        }
+
+        return $default ?? config("admissions.identity.{$key}");
     }
 
     protected static function booted(): void

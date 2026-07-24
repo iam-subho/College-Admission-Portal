@@ -3,6 +3,7 @@ import { Head, Link, usePage } from '@inertiajs/vue3';
 import PortalLayout from '@/Layouts/PortalLayout.vue';
 import { computed } from 'vue';
 import { formatDate, formatDateTime } from '@/utils/date.js';
+import { useSite } from '@/Composables/useSite.js';
 
 const props = defineProps({
     application: { type: Object, required: true },
@@ -11,6 +12,8 @@ const props = defineProps({
     schedule: { type: Object, default: null },
     can_download: { type: Boolean, default: false },
 });
+
+const { collegeName, cityState } = useSite();
 
 const page = usePage();
 const flashError = computed(() => page.props?.flash?.error || null);
@@ -79,7 +82,7 @@ const downloadHref = computed(() => `/student/admit-card/${props.application.id}
             <header class="px-6 py-4 bg-maroon text-white flex items-center justify-between">
                 <div>
                     <h2 class="font-serif text-lg">Admit Card · Admission Test</h2>
-                    <p class="text-xs opacity-90 mt-0.5">Sardar Vallabhbhai National College, Anand</p>
+                    <p class="text-xs opacity-90 mt-0.5">{{ collegeName }}<template v-if="cityState"> · {{ cityState }}</template></p>
                 </div>
                 <span class="text-xs uppercase font-mono px-2 py-0.5 rounded bg-white text-maroon">Published</span>
             </header>

@@ -4,8 +4,11 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Modules\Admissions\Models\AcademicSession;
+use Modules\Admissions\Models\SiteSetting;
 use Modules\Students\Models\Student;
 use Modules\Students\Services\ProfileCompletionService;
+use Modules\Users\Services\OtpService;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -32,7 +35,7 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'app' => [
-                'name' => config('app.name', 'SVNC Admissions'),
+                'name' => SiteSetting::get('portal_name'),
             ],
             'auth' => fn () => [
                 'user' => $request->user() ? [
@@ -45,6 +48,9 @@ class HandleInertiaRequests extends Middleware
                     'dashboard_route' => $request->user()->dashboardRoute(),
                 ] : null,
             ],
+            'site' => fn () => SiteSetting::resolved(),
+            'active_session' => fn () => AcademicSession::where('is_active', true)
+                ->first(['id', 'code', 'name']),
             'flash' => fn () => (array) $request->session()->get('flash', []),
             'csrf_token' => fn () => csrf_token(),
             'dpdp' => [
@@ -53,7 +59,7 @@ class HandleInertiaRequests extends Middleware
             // Surfaces the dev/staging master OTP only when NOT in production.
             // Used by the OTP verify pages to show a hint banner.
             'dev' => app()->environment('production') ? null : [
-                'master_otp' => \Modules\Users\Services\OtpService::DEV_MASTER_CODE,
+                'master_otp' => OtpService::DEV_MASTER_CODE,
                 'env' => app()->environment(),
             ],
             'profile_status' => fn () => $this->profileStatus($request),

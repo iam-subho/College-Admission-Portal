@@ -9,9 +9,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
+use Modules\Admissions\Models\SiteSetting;
 use Modules\Payments\Models\PaymentGateway;
 use Modules\Payments\Models\PaymentOrder;
 use Modules\Payments\Services\AdmissionFeeResolver;
+use Modules\Payments\Services\FeeResolver;
 use Modules\Payments\Services\PaymentGatewayManager;
 use Modules\Seats\Models\SeatAllocation;
 
@@ -60,7 +62,7 @@ class AdmissionFeeController extends Controller
                 'internal_order_id' => $latestOrder->id,
                 'amount_paise' => (int) round($latestOrder->total * 100),
                 'currency' => $latestOrder->currency,
-                'name' => 'SVNC Admissions',
+                'name' => SiteSetting::get('portal_name'),
                 'description' => 'Admission Fee — '.$latestOrder->order_number,
                 'callback_url' => route('payments.callback.razorpay'),
             ];
@@ -76,7 +78,7 @@ class AdmissionFeeController extends Controller
                 'display_name' => $g->display_name,
                 'mode' => $g->mode,
                 'logo_url' => $g->logo_url,
-                'convenience_fee' => $this->feeResolver instanceof \Modules\Payments\Services\FeeResolver
+                'convenience_fee' => $this->feeResolver instanceof FeeResolver
                     ? $this->feeResolver->convenienceFee($fee['amount'], $g->convenience_fee_rule)
                     : 0,
             ]),
@@ -109,7 +111,7 @@ class AdmissionFeeController extends Controller
         if (method_exists($this->feeResolver, 'convenienceFee')) {
             $convenience = $this->feeResolver->convenienceFee($fee['amount'], $gateway->convenience_fee_rule);
         } else {
-            $convenience = app(\Modules\Payments\Services\FeeResolver::class)->convenienceFee($fee['amount'], $gateway->convenience_fee_rule);
+            $convenience = app(FeeResolver::class)->convenienceFee($fee['amount'], $gateway->convenience_fee_rule);
         }
         $gst = round($convenience * ((float) config('payments.gst_percent', 18)) / 100, 2);
         $total = round($fee['amount'] + $convenience + $gst, 2);
@@ -118,7 +120,7 @@ class AdmissionFeeController extends Controller
             $order = PaymentOrder::create([
                 'application_id' => $allocation->application_id,
                 'payment_gateway_id' => $gateway->id,
-                'order_number' => 'SVNC/ADM/'.now()->format('Y').'/'.strtoupper(Str::random(6)),
+                'order_number' => config('admissions.college_code').'/ADM/'.now()->format('Y').'/'.strtoupper(Str::random(6)),
                 'purpose' => PaymentOrder::PURPOSE_ADMISSION_FEE,
                 'amount' => $fee['amount'],
                 'convenience_fee' => $convenience,

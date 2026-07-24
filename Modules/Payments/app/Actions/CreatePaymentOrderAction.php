@@ -53,6 +53,6 @@ class CreatePaymentOrderAction
         $year = now()->format('Y');
         $suffix = strtoupper(Str::random(6));
 
-        return "SVNC/PAY/{$year}/{$suffix}";
+        return config('admissions.college_code')."/PAY/{$year}/{$suffix}";
     }
 }

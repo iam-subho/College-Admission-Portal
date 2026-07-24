@@ -1,17 +1,20 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
 import PortalLayout from '@/Layouts/PortalLayout.vue';
+import { useSite } from '@/Composables/useSite.js';
 
 defineProps({
     stats: { type: Object, required: true },
 });
+
+const { portalTagline } = useSite();
 </script>
 
 <template>
     <Head title="Admin Dashboard" />
     <PortalLayout title="Admin Dashboard" :breadcrumb="['Home', 'Admin']">
         <p class="text-sm text-ink-mute mb-6">
-            Online Admission System · Session 2026-27 · Last refreshed {{ new Date().toLocaleString('en-IN') }}
+            {{ portalTagline }} · Last refreshed {{ new Date().toLocaleString('en-IN') }}
         </p>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">

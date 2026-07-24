@@ -2,8 +2,10 @@
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import PortalLayout from '@/Layouts/PortalLayout.vue';
 import Button from '@/Components/Ui/Button.vue';
+import CollegeMark from '@/Components/Ui/CollegeMark.vue';
 import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue';
 import { formatDate, formatDateTime } from '@/utils/date.js';
+import { useSite } from '@/Composables/useSite.js';
 
 const props = defineProps({
     application: { type: Object, required: true },
@@ -15,6 +17,14 @@ const props = defineProps({
     categories: { type: Object, required: true },
     latest_withdrawal: { type: Object, default: null },
 });
+
+const { cityState } = useSite();
+
+const documentHeaderLine = computed(() =>
+    [cityState.value, 'Online Admission', `Session ${props.application.session?.code || '—'}`]
+        .filter(Boolean)
+        .join(' · '),
+);
 
 // --- Withdraw flow
 const showWithdrawModal = ref(false);
@@ -33,8 +43,12 @@ const rejectedWithdrawal = computed(() => props.latest_withdrawal?.status === 'r
 
 const isDraft = computed(() => props.application.status === 'draft');
 
-const REQUIRED_CATEGORIES = ['minor', 'aec', 'sec', 'vac'];
-const OPTIONAL_CATEGORIES = ['mdc', 'internship', 'research'];
+// NEP preference capture: one Minor + at least one AEC are required; the rest
+// are optional preferences finalised by the college after admission.
+const REQUIRED_CATEGORIES = ['minor', 'aec'];
+const OPTIONAL_CATEGORIES = ['sec', 'vac', 'mdc', 'internship', 'research'];
+// Single-pick categories behave like radios (choose exactly one).
+const SINGLE_SELECT_CATEGORIES = ['minor'];
 
 // --- DRAFT MODE STATE (form) ---
 const selectionState = reactive({});
@@ -60,10 +74,16 @@ const submitError = ref(null);
 const toggle = (cat, id) => {
     const arr = selectionState[cat];
     const idx = arr.indexOf(id);
+    if (SINGLE_SELECT_CATEGORIES.includes(cat)) {
+        // Radio behaviour — selecting replaces; re-clicking the chosen one clears it.
+        selectionState[cat] = idx >= 0 ? [] : [id];
+        return;
+    }
     if (idx >= 0) arr.splice(idx, 1);
     else arr.push(id);
 };
 const isPicked = (cat, id) => selectionState[cat]?.includes(id);
+const categorySingle = (cat) => SINGLE_SELECT_CATEGORIES.includes(cat);
 
 const autosave = async () => {
     if (!isDraft.value) return;
@@ -225,12 +245,19 @@ const fullAddress = computed(() => {
                 <h2 class="font-serif text-base text-maroon">Subject Combination (NEP 2020)</h2>
             </header>
             <div class="p-4 space-y-4">
+                <div class="px-3 py-2 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
+                    These are your <strong>preferred choices</strong>. The Major is fixed by your programme.
+                    Pick <strong>one Minor</strong> and at least <strong>one language (AEC)</strong>; SEC, VAC and
+                    multidisciplinary courses are optional. The final NEP-compliant combination — exact credits
+                    and semester plan — is confirmed by the college after admission.
+                </div>
                 <div v-for="(label, cat) in categories" :key="cat" class="border border-border rounded p-3">
                     <div class="flex items-center justify-between mb-2">
                         <h3 class="text-sm font-semibold text-maroon">
                             {{ label }}
                             <span v-if="categoryRequired(cat)" class="text-xs text-maroon ml-1">*</span>
                             <span v-else-if="categoryOptional(cat)" class="text-xs text-ink-mute ml-1">(optional)</span>
+                            <span v-if="categorySingle(cat)" class="text-[10px] text-ink-mute ml-1">— choose one</span>
                         </h3>
                         <span v-if="selectionState[cat]?.length" class="text-xs text-green-700 font-mono">
                             {{ selectionState[cat].length }} picked
@@ -243,7 +270,9 @@ const fullAddress = computed(() => {
                         <label v-for="p in pools[cat]" :key="p.id"
                             class="flex items-start gap-2 px-3 py-2 border rounded cursor-pointer text-sm"
                             :class="isPicked(cat, p.id) ? 'border-maroon bg-saffron-soft' : 'border-border hover:bg-cream'">
-                            <input type="checkbox" :checked="isPicked(cat, p.id)"
+                            <input :type="categorySingle(cat) ? 'radio' : 'checkbox'"
+                                :name="categorySingle(cat) ? `pool_${cat}` : undefined"
+                                :checked="isPicked(cat, p.id)"
                                 @change="toggle(cat, p.id)"
                                 :disabled="cat === 'major' && p.is_default" class="mt-0.5" />
                             <div class="flex-1">
@@ -298,7 +327,7 @@ const fullAddress = computed(() => {
                 </div>
                 <Button @click="submit" :disabled="!canSubmit">Submit Application</Button>
                 <p v-if="!canSubmit" class="text-xs text-ink-mute">
-                    Pick at least one course from each required category (Minor, AEC, SEC, VAC) and accept both declarations.
+                    Choose one Minor discipline, at least one AEC language, and accept both declarations.
                 </p>
             </div>
         </section>
@@ -365,17 +394,7 @@ const fullAddress = computed(() => {
             <!-- Document header -->
             <header class="px-6 py-5 border-b-2 border-maroon">
                 <div class="flex items-start justify-between gap-6">
-                    <div>
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 rounded-full bg-maroon text-white text-[10px] font-bold flex flex-col items-center justify-center leading-tight">
-                                <span>SVNC</span><span>1956</span>
-                            </div>
-                            <div>
-                                <h1 class="font-serif text-xl text-maroon leading-tight">Sardar Vallabhbhai National College</h1>
-                                <p class="text-xs text-ink-mute">Anand, Gujarat · Online Admission · Session {{ application.session?.code }}</p>
-                            </div>
-                        </div>
-                    </div>
+                    <CollegeMark size="lg" tone="light" :subtitle="documentHeaderLine" />
                     <span class="px-3 py-1 text-xs font-mono uppercase rounded" :class="statusBadge.cls">
                         {{ statusBadge.label }}
                     </span>

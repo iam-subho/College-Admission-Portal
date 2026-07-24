@@ -4,6 +4,7 @@ import PortalLayout from '@/Layouts/PortalLayout.vue';
 import Button from '@/Components/Ui/Button.vue';
 import { ref, computed, onMounted, watch } from 'vue';
 import { formatDateTime } from '@/utils/date.js';
+import { useSite } from '@/Composables/useSite.js';
 
 const props = defineProps({
     allocation: { type: Object, required: true },
@@ -14,6 +15,8 @@ const props = defineProps({
     resume_checkout: { type: Object, default: null },
     prefill: { type: Object, default: () => ({}) },
 });
+
+const { portalName } = useSite();
 
 const page = usePage();
 const checkoutPayload = computed(() => page.props?.flash?.checkout || null);
@@ -72,7 +75,7 @@ const openRazorpay = async (payload) => {
         order_id: payload.gateway_order_id,
         amount: payload.amount_paise,
         currency: payload.currency,
-        name: payload.name || 'SVNC Admissions',
+        name: payload.name || portalName.value,
         description: payload.description || 'Admission Fee',
         prefill: { name: props.prefill.name, email: props.prefill.email, contact: props.prefill.contact },
         notes: { internal_order_id: String(payload.internal_order_id) },

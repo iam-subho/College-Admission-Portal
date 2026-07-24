@@ -4,7 +4,9 @@ namespace Modules\Admissions\Pdf;
 
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Response;
+use Modules\Academics\Models\ProgrammeCoursePool;
 use Modules\Admissions\Models\Application;
+use Modules\Admissions\Models\SiteSetting;
 
 /**
  * Renders the student application acknowledgement as an A4 PDF.
@@ -43,8 +45,9 @@ class ApplicationReceiptPdf
             'session' => $application->session,
             'academic_records' => $student?->academicRecords ?? collect(),
             'picks' => $picksByCategory,
-            'categories' => \Modules\Academics\Models\ProgrammeCoursePool::CATEGORIES,
+            'categories' => ProgrammeCoursePool::CATEGORIES,
             'paid_order' => $application->paymentOrders->where('status', 'paid')->first(),
+            'site' => SiteSetting::resolved(),
         ])->render();
 
         $safeNumber = str_replace(['/', '\\'], '-', (string) ($application->application_number ?? 'DRAFT'));

@@ -249,7 +249,7 @@ const ctaBtnCls = (primary) => primary
                 <div></div>
                 <div class="md:col-span-3">
                     <InputText v-model="scheduleForm.venue" label="Venue" required :error="scheduleForm.errors.venue"
-                        placeholder="e.g. SVNC Main Block, Hall A-101" />
+                        placeholder="e.g. Main Block, Hall A-101" />
                 </div>
                 <div class="md:col-span-3">
                     <label class="block text-xs font-medium text-ink mb-1">Venue Address</label>

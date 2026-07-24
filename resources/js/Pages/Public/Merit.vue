@@ -2,6 +2,8 @@
 import { Head, Link } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import { formatDateTime } from '@/utils/date.js';
+import CollegeMark from '@/Components/Ui/CollegeMark.vue';
+import { useSite } from '@/Composables/useSite.js';
 
 const props = defineProps({
     program: { type: Object, required: true },
@@ -12,8 +14,18 @@ const props = defineProps({
     cutoffs: { type: Array, default: () => [] },
 });
 
+const { cityState, helplineEmail } = useSite();
+const publicHeaderLine = computed(() =>
+    [cityState.value, 'Online Admissions Portal'].filter(Boolean).join(' · '),
+);
+
 const search = ref('');
 const showAbsent = ref(false);
+
+const searchPlaceholder = computed(() => {
+    const sample = props.entries.find(e => e.application_number)?.application_number;
+    return sample ? `e.g. ${sample}` : 'Application number';
+});
 
 const filtered = computed(() => {
     return props.entries.filter(e => {
@@ -34,14 +46,8 @@ const filtered = computed(() => {
         <!-- Compact public header (no portal nav) -->
         <header class="bg-navy text-white py-3 border-b-4 border-saffron">
             <div class="max-w-5xl mx-auto px-6 flex items-center justify-between">
-                <Link href="/" class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-full bg-maroon text-white text-[9px] font-bold flex items-center justify-center leading-tight">
-                        <div class="text-center">SVNC<br/>1956</div>
-                    </div>
-                    <div>
-                        <div class="font-serif text-base">Sardar Vallabhbhai National College</div>
-                        <div class="text-[10px] opacity-80">Anand · Online Admissions Portal</div>
-                    </div>
+                <Link href="/">
+                    <CollegeMark size="sm" :subtitle="publicHeaderLine" />
                 </Link>
                 <Link href="/login" class="text-xs text-white/80 hover:text-white">Student Sign-In →</Link>
             </div>
@@ -78,7 +84,7 @@ const filtered = computed(() => {
             <div class="flex gap-3 items-end mt-5 mb-3 flex-wrap">
                 <div>
                     <label class="block text-xs font-medium text-ink mb-1">Find by Application Number</label>
-                    <input v-model="search" placeholder="e.g. SVNC/UG/2026/000001"
+                    <input v-model="search" :placeholder="searchPlaceholder"
                         class="px-3 py-2 text-sm border border-border rounded bg-white w-72" />
                 </div>
                 <label class="flex items-center gap-2 text-xs pb-2">
@@ -122,7 +128,7 @@ const filtered = computed(() => {
 
             <p class="mt-4 text-xs text-ink-mute italic">
                 Names and personal information are intentionally omitted on this public page in line with DPDP best practices.
-                Candidates can identify themselves by their application number. Discrepancies should be reported to admissions@svnc.edu.in within 7 days.
+                Candidates can identify themselves by their application number. Discrepancies should be reported to {{ helplineEmail }} within 7 days.
             </p>
         </div>
     </main>

@@ -40,7 +40,7 @@ const programmeBadge = (p) => (p.type || 'UG').toUpperCase();
 </script>
 
 <template>
-    <Head :title="`Admissions — ${s('college_name', 'Sardar Vallabhbhai National College')}`" />
+    <Head :title="`Admissions — ${s('college_name')}`" />
 
     <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-1 focus:left-1 focus:z-50 bg-maroon text-white px-2 py-1 text-xs rounded">
         Skip to main content
@@ -55,7 +55,7 @@ const programmeBadge = (p) => (p.type || 'UG').toUpperCase();
                     <a href="#main" class="hover:text-white">Skip to Content</a>
                     <a href="#sitemap" class="hover:text-white">Sitemap</a>
                     <span class="text-gray-500">·</span>
-                    <span class="hidden md:inline text-gray-400">Anand, Gujarat</span>
+                    <span v-if="s('city_state')" class="hidden md:inline text-gray-400">{{ s('city_state') }}</span>
                 </div>
                 <div class="flex items-center gap-3">
                     <div class="flex gap-1 items-baseline">
@@ -78,28 +78,28 @@ const programmeBadge = (p) => (p.type || 'UG').toUpperCase();
             <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
                 <Link href="/" class="flex items-center gap-3">
                     <div class="w-14 h-14 rounded-full bg-maroon text-white flex flex-col items-center justify-center leading-tight text-[10px] font-bold border-2 border-saffron">
-                        <span>{{ s('college_short', 'SVNC') }}</span><span>{{ s('estd_year', '1956') }}</span>
+                        <span>{{ s('college_short') }}</span><span>{{ s('estd_year') }}</span>
                     </div>
                     <div class="leading-tight">
-                        <div class="font-serif text-xl text-maroon">{{ s('college_name', 'Sardar Vallabhbhai National College') }}</div>
+                        <div class="font-serif text-xl text-maroon">{{ s('college_name') }}</div>
                         <div v-if="s('college_name_hi') || s('college_name_gu')" class="font-serif text-sm text-ink-mute">
                             <span v-if="s('college_name_hi')">{{ s('college_name_hi') }}</span>
                             <span v-if="s('college_name_hi') && s('college_name_gu')"> · </span>
                             <span v-if="s('college_name_gu')">{{ s('college_name_gu') }}</span>
                         </div>
                         <div class="text-xs text-ink-mute mt-0.5">
-                            <span v-if="s('city_state')">{{ s('city_state') }} · </span>Estd. {{ s('estd_year', '1956') }}
+                            <span v-if="s('city_state')">{{ s('city_state') }} · </span>Estd. {{ s('estd_year') }}
                         </div>
                     </div>
                 </Link>
                 <div class="hidden md:flex items-center gap-3 text-xs">
                     <div class="border border-border rounded px-3 py-1">
                         <div class="text-[9px] uppercase tracking-wider text-ink-mute">NAAC Accredited</div>
-                        <div class="font-serif text-base text-maroon font-semibold leading-none">{{ s('naac_grade', 'A+') }}</div>
+                        <div class="font-serif text-base text-maroon font-semibold leading-none">{{ s('naac_grade') }}</div>
                     </div>
                     <div class="border border-border rounded px-3 py-1">
                         <div class="text-[9px] uppercase tracking-wider text-ink-mute">UGC</div>
-                        <div class="font-serif text-sm text-maroon font-semibold leading-none">{{ s('ugc_status', '2(f) · 12(B)') }}</div>
+                        <div class="font-serif text-sm text-maroon font-semibold leading-none">{{ s('ugc_status') }}</div>
                     </div>
                 </div>
             </div>
@@ -143,14 +143,14 @@ const programmeBadge = (p) => (p.type || 'UG').toUpperCase();
             <section class="grid grid-cols-1 lg:grid-cols-5 gap-6" id="admissions">
                 <!-- Left: Headline + CTAs -->
                 <div class="lg:col-span-3 bg-white border border-border rounded p-6">
-                    <div class="inline-block px-2 py-0.5 mb-3 text-[10px] font-semibold tracking-wider uppercase bg-saffron-soft text-maroon rounded">
-                        Session {{ active_session?.code || '2026-27' }} · Now Open
+                    <div v-if="active_session?.code" class="inline-block px-2 py-0.5 mb-3 text-[10px] font-semibold tracking-wider uppercase bg-saffron-soft text-maroon rounded">
+                        Session {{ active_session.code }} · Now Open
                     </div>
                     <h1 class="font-serif text-3xl md:text-4xl text-maroon leading-tight">
-                        Admissions Open {{ active_session?.code || '2026-27' }}
+                        Admissions Open <template v-if="active_session?.code">{{ active_session.code }}</template>
                     </h1>
                     <p class="text-ink-mute mt-2 mb-4 text-sm">
-                        {{ s('hero_pitch', 'Apply online for Under-graduate and Post-graduate programmes under NEP 2020 at Sardar Vallabhbhai National College, Anand.') }}
+                        {{ s('hero_pitch') }}
                     </p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-ink-mute mb-4">
                         <div v-if="active_session?.application_open_date" class="border border-border rounded p-2">
@@ -278,18 +278,18 @@ const programmeBadge = (p) => (p.type || 'UG').toUpperCase();
         <footer id="sitemap" class="bg-navy-deep text-gray-300 mt-12">
             <div class="max-w-7xl mx-auto px-6 py-6 grid grid-cols-1 md:grid-cols-4 gap-6 text-xs">
                 <div>
-                    <div class="font-serif text-base text-white mb-2">{{ s('college_short', 'SVNC') }} Anand</div>
+                    <div class="font-serif text-base text-white mb-2">{{ s('college_short') }}</div>
                     <p class="text-gray-400 leading-relaxed">
-                        {{ s('college_name', 'Sardar Vallabhbhai National College') }},<br>
-                        {{ s('address_line1', 'Mota Bazar, Vallabh Vidyanagar Road,') }}<br>
-                        {{ s('address_line2', 'Anand — 388 001, Gujarat, India') }}
+                        {{ s('college_name') }},<br>
+                        {{ s('address_line1') }}<br>
+                        {{ s('address_line2') }}
                     </p>
                 </div>
                 <div>
                     <div class="font-serif text-base text-white mb-2">Helpdesk</div>
-                    <p>Helpline: <a :href="`tel:${s('helpline_phone')}`" class="text-saffron-soft hover:underline">{{ s('helpline_phone', '+91 2692 26 13 13') }}</a></p>
-                    <p>Email: <a :href="`mailto:${s('helpline_email')}`" class="text-saffron-soft hover:underline">{{ s('helpline_email', 'admissions@svnc.ac.in') }}</a></p>
-                    <p class="mt-2">{{ s('helpline_hours', 'Mon–Sat · 10:00–17:00 IST') }}</p>
+                    <p>Helpline: <a :href="`tel:${s('helpline_phone')}`" class="text-saffron-soft hover:underline">{{ s('helpline_phone') }}</a></p>
+                    <p>Email: <a :href="`mailto:${s('helpline_email')}`" class="text-saffron-soft hover:underline">{{ s('helpline_email') }}</a></p>
+                    <p class="mt-2">{{ s('helpline_hours') }}</p>
                 </div>
                 <div>
                     <div class="font-serif text-base text-white mb-2">Quick Links</div>
@@ -304,17 +304,17 @@ const programmeBadge = (p) => (p.type || 'UG').toUpperCase();
                 <div>
                     <div class="font-serif text-base text-white mb-2">Compliance</div>
                     <ul class="space-y-1 text-gray-400">
-                        <li>UGC {{ s('ugc_status', '2(f) · 12(B)') }}</li>
-                        <li>NAAC {{ s('naac_grade', 'A+') }} Accredited</li>
+                        <li>UGC {{ s('ugc_status') }}</li>
+                        <li>NAAC {{ s('naac_grade') }} Accredited</li>
                         <li>DPDP Act 2023 compliant</li>
-                        <li>Anti-Ragging Cell: {{ s('anti_ragging_phone', '1800-180-5522') }}</li>
+                        <li>Anti-Ragging Cell: {{ s('anti_ragging_phone') }}</li>
                         <li>AISHE Registered</li>
                     </ul>
                 </div>
             </div>
             <div class="border-t border-white/10">
                 <div class="max-w-7xl mx-auto px-6 py-3 flex flex-col md:flex-row justify-between items-center gap-2 text-[10px] text-gray-500">
-                    <div>© {{ new Date().getFullYear() }} {{ s('college_name', 'Sardar Vallabhbhai National College') }}, Anand. All rights reserved.</div>
+                    <div>© {{ new Date().getFullYear() }} {{ s('college_name') }}. All rights reserved.</div>
                     <div class="flex gap-3">
                         <a href="#" class="hover:text-white">Privacy</a>
                         <a href="#" class="hover:text-white">Terms</a>

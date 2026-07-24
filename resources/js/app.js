@@ -2,8 +2,10 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
 
+const portalName = document.querySelector('meta[name="portal-name"]')?.content || '';
+
 createInertiaApp({
-    title: (title) => (title ? `${title} · SVNC Admissions` : 'SVNC Admissions'),
+    title: (title) => [title, portalName].filter(Boolean).join(' · '),
     resolve: (name) => {
         const pages = import.meta.glob('./Pages/**/*.vue', { eager: true });
         const page = pages[`./Pages/${name}.vue`];

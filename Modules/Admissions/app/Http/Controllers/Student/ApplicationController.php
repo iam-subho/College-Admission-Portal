@@ -14,6 +14,8 @@ use Modules\Admissions\Actions\ApplicationSubmitAction;
 use Modules\Admissions\Models\AcademicSession;
 use Modules\Admissions\Models\Application;
 use Modules\Admissions\Models\ApplicationCourseSelection;
+use Modules\Admissions\Models\WithdrawalRequest;
+use Modules\Admissions\Pdf\ApplicationReceiptPdf;
 use Modules\Students\Models\Student;
 use Modules\Students\Services\ProfileCompletionService;
 
@@ -111,7 +113,7 @@ class ApplicationController extends Controller
 
         $academicRecords = $student->academicRecords()->orderBy('level')->get();
 
-        $latestWithdrawal = \Modules\Admissions\Models\WithdrawalRequest::where('application_id', $application->id)
+        $latestWithdrawal = WithdrawalRequest::where('application_id', $application->id)
             ->latest('id')->first();
 
         return Inertia::render('Student/Application', [
@@ -158,7 +160,7 @@ class ApplicationController extends Controller
         return response()->json(['ok' => true, 'saved_at' => now()->toIso8601String()]);
     }
 
-    public function download(Request $request, Application $application, \Modules\Admissions\Pdf\ApplicationReceiptPdf $pdf): \Illuminate\Http\Response|RedirectResponse
+    public function download(Request $request, Application $application, ApplicationReceiptPdf $pdf): \Illuminate\Http\Response|RedirectResponse
     {
         $this->authorizeOwnership($application, $request);
 
@@ -175,15 +177,19 @@ class ApplicationController extends Controller
 
         abort_unless($application->student->profile_locked, 403, 'Profile not locked.');
 
+        // NEP 2020 combination is captured as a PREFERENCE at admission — the
+        // college finalises the credit-compliant, semester-wise plan afterwards.
+        // Required: one Minor discipline + at least one AEC language. The rest
+        // (SEC / VAC / MDC / internship / research) are optional preferences.
         $data = $request->validate([
             'selections' => ['required', 'array'],
-            'selections.minor' => ['required', 'array', 'min:1'],
+            'selections.minor' => ['required', 'array', 'size:1'],
             'selections.minor.*' => ['integer', 'exists:programme_course_pools,id'],
             'selections.aec' => ['required', 'array', 'min:1'],
             'selections.aec.*' => ['integer', 'exists:programme_course_pools,id'],
-            'selections.sec' => ['required', 'array', 'min:1'],
+            'selections.sec' => ['sometimes', 'array'],
             'selections.sec.*' => ['integer', 'exists:programme_course_pools,id'],
-            'selections.vac' => ['required', 'array', 'min:1'],
+            'selections.vac' => ['sometimes', 'array'],
             'selections.vac.*' => ['integer', 'exists:programme_course_pools,id'],
             'selections.mdc' => ['sometimes', 'array'],
             'selections.mdc.*' => ['integer', 'exists:programme_course_pools,id'],
@@ -194,6 +200,9 @@ class ApplicationController extends Controller
             'special_request' => ['nullable', 'string', 'max:1000'],
             'declaration_anti_ragging' => ['accepted'],
             'declaration_information_true' => ['accepted'],
+        ], [
+            'selections.minor.size' => 'Choose exactly one Minor discipline.',
+            'selections.aec.min' => 'Choose at least one Ability Enhancement (language) course.',
         ]);
 
         $this->syncSelections($application, $data['selections']);

@@ -4,8 +4,9 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="portal-name" content="{{ $portalName }}">
 
-        <title inertia>{{ config('app.name', 'SVNC Admissions') }}</title>
+        <title inertia>{{ $portalName }}</title>
 
         @fonts
         @routes
